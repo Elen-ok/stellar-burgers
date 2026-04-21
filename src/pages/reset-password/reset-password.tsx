@@ -38,3 +38,4 @@ export const ResetPassword: FC = () => {
     />
   );
 };
+export default ResetPassword;

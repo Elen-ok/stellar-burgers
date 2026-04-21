@@ -1,43 +1,43 @@
+
 import { ProfileUI } from '@ui-pages';
 import { FC, SyntheticEvent, useEffect, useState } from 'react';
 
 export const Profile: FC = () => {
-  /** TODO: взять переменную из стора */
-  const user = {
-    name: '',
-    email: ''
-  };
-
+  const savedUser = JSON.parse(localStorage.getItem('demo-user') || '{"name":"","email":""}');
+  
   const [formValue, setFormValue] = useState({
-    name: user.name,
-    email: user.email,
+    name: savedUser.name || '',
+    email: savedUser.email || '',
     password: ''
   });
 
-  useEffect(() => {
-    setFormValue((prevState) => ({
-      ...prevState,
-      name: user?.name || '',
-      email: user?.email || ''
-    }));
-  }, [user]);
+  const [isFormChanged, setIsFormChanged] = useState(false);
 
-  const isFormChanged =
-    formValue.name !== user?.name ||
-    formValue.email !== user?.email ||
-    !!formValue.password;
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('demo-user') || '{"name":"","email":""}');
+    setFormValue({
+      name: user.name || '',
+      email: user.email || '',
+      password: ''
+    });
+  }, []);
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
+    localStorage.setItem('demo-user', JSON.stringify({ name: formValue.name, email: formValue.email }));
+    setIsFormChanged(false);
+    alert('Данные сохранены!');
   };
 
   const handleCancel = (e: SyntheticEvent) => {
     e.preventDefault();
+    const user = JSON.parse(localStorage.getItem('demo-user') || '{"name":"","email":""}');
     setFormValue({
-      name: user.name,
-      email: user.email,
+      name: user.name || '',
+      email: user.email || '',
       password: ''
     });
+    setIsFormChanged(false);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,6 +45,7 @@ export const Profile: FC = () => {
       ...prevState,
       [e.target.name]: e.target.value
     }));
+    setIsFormChanged(true);
   };
 
   return (
@@ -56,6 +57,6 @@ export const Profile: FC = () => {
       handleInputChange={handleInputChange}
     />
   );
-
-  return null;
 };
+
+export default Profile;

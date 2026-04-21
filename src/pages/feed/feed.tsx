@@ -1,15 +1,29 @@
+import { useEffect, FC, useCallback } from 'react';
+import { useDispatch, useSelector } from '../../services/store';
 import { Preloader } from '@ui';
 import { FeedUI } from '@ui-pages';
-import { TOrder } from '@utils-types';
-import { FC } from 'react';
+import { fetchFeed } from '../../services/slices/feedSlice';
 
 export const Feed: FC = () => {
-  /** TODO: взять переменную из стора */
-  const orders: TOrder[] = [];
+  const dispatch = useDispatch();
+  const { orders, loading } = useSelector((state) => state.feed);
 
-  if (!orders.length) {
+  const loadFeeds = useCallback(() => {
+    dispatch(fetchFeed());
+  }, [dispatch]);
+
+  useEffect(() => {
+    loadFeeds();
+    // Обновляем каждые 10 секунд
+    const interval = setInterval(loadFeeds, 10000);
+    return () => clearInterval(interval);
+  }, [loadFeeds]);
+
+  if (loading && !orders.length) {
     return <Preloader />;
   }
 
-  <FeedUI orders={orders} handleGetFeeds={() => {}} />;
+  return <FeedUI orders={orders} handleGetFeeds={loadFeeds} />;
 };
+
+export default Feed;

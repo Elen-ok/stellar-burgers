@@ -35,3 +35,22 @@
   align-items: center;
   margin: 0 auto;
 }
+
+.link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #8585AD;
+  transition: color 0.2s;
+}
+
+.link_active {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #F2F2F3;
+}
+
+.link:hover {
+  color: #F2F2F3;
+}

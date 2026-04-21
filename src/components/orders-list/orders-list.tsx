@@ -1,7 +1,10 @@
 import { FC, memo } from 'react';
-
-import { OrdersListProps } from './type';
 import { OrdersListUI } from '@ui';
+import { TOrder } from '@utils-types';
+
+interface OrdersListProps {
+  orders: TOrder[];
+}
 
 export const OrdersList: FC<OrdersListProps> = memo(({ orders }) => {
   const orderByDate = [...orders].sort(
