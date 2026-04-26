@@ -1,42 +1,61 @@
-
 import { ProfileUI } from '@ui-pages';
 import { FC, SyntheticEvent, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from '../../services/store';
+import { fetchUser, updateUserData } from '../../services/slices/userSlice';
 
 export const Profile: FC = () => {
-  const savedUser = JSON.parse(localStorage.getItem('demo-user') || '{"name":"","email":""}');
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user.user);
   
   const [formValue, setFormValue] = useState({
-    name: savedUser.name || '',
-    email: savedUser.email || '',
+    name: '',
+    email: '',
     password: ''
   });
-
   const [isFormChanged, setIsFormChanged] = useState(false);
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('demo-user') || '{"name":"","email":""}');
-    setFormValue({
-      name: user.name || '',
-      email: user.email || '',
-      password: ''
-    });
-  }, []);
+    if (!user) {
+      dispatch(fetchUser());
+    }
+  }, [dispatch, user]);
+
+  useEffect(() => {
+    if (user) {
+      setFormValue({
+        name: user.name || '',
+        email: user.email || '',
+        password: ''
+      });
+    }
+  }, [user]);
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
-    localStorage.setItem('demo-user', JSON.stringify({ name: formValue.name, email: formValue.email }));
-    setIsFormChanged(false);
-    alert('Данные сохранены!');
+    dispatch(updateUserData({ 
+      name: formValue.name, 
+      email: formValue.email,
+      password: formValue.password || undefined
+    }))
+      .unwrap()
+      .then(() => {
+        setIsFormChanged(false);
+        alert('Данные успешно обновлены');
+      })
+      .catch((err: Error) => {
+        alert(err.message || 'Ошибка обновления данных');
+      });
   };
 
   const handleCancel = (e: SyntheticEvent) => {
     e.preventDefault();
-    const user = JSON.parse(localStorage.getItem('demo-user') || '{"name":"","email":""}');
-    setFormValue({
-      name: user.name || '',
-      email: user.email || '',
-      password: ''
-    });
+    if (user) {
+      setFormValue({
+        name: user.name || '',
+        email: user.email || '',
+        password: ''
+      });
+    }
     setIsFormChanged(false);
   };
 
