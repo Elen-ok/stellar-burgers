@@ -2,24 +2,27 @@ import { useEffect, FC } from 'react';
 import { useDispatch, useSelector } from '../../services/store';
 import { ProfileOrdersUI } from '@ui-pages';
 import { Preloader } from '@ui';
-import { fetchFeed } from '../../services/slices/feedSlice';
+import { fetchProfileOrders } from '../../services/slices/profileOrdersSlice';
 
 export const ProfileOrders: FC = () => {
   const dispatch = useDispatch();
-  const { orders, loading } = useSelector((state) => state.feed);
+  const { orders, loading, error } = useSelector((state) => state.profileOrders);
 
   useEffect(() => {
-    dispatch(fetchFeed());
+    console.log('ProfileOrders: загружаем заказы');
+    dispatch(fetchProfileOrders());
   }, [dispatch]);
 
   if (loading && !orders.length) {
     return <Preloader />;
   }
 
-  // Показываем последние 10 заказов как историю пользователя
-  const userOrders = orders.slice(0, 10);
+  if (error) {
+    console.error('ProfileOrders error:', error);
+  }
 
-  return <ProfileOrdersUI orders={userOrders} />;
+  console.log('ProfileOrders: отображаем заказы', orders.length);
+  return <ProfileOrdersUI orders={orders} />;
 };
 
 export default ProfileOrders;

@@ -5,6 +5,7 @@ import constructorReducer from './slices/constructorSlice';
 import orderReducer from './slices/orderSlice';
 import feedReducer from './slices/feedSlice';
 import userReducer from './slices/userSlice';
+import profileOrdersReducer from './slices/profileOrdersSlice';
 
 export const store = configureStore({
   reducer: {
@@ -13,6 +14,7 @@ export const store = configureStore({
     order: orderReducer,
     feed: feedReducer,
     user: userReducer,
+    profileOrders: profileOrdersReducer,
   },
   devTools: process.env.NODE_ENV !== 'production',
 });

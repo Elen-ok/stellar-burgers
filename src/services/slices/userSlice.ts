@@ -7,7 +7,6 @@ import {
   logoutApi,
 } from '../../utils/burger-api';
 import { TUser } from '../../utils/types';
-import { setCookie, getCookie, deleteCookie } from '../../utils/cookie';
 
 interface UserState {
   user: TUser | null;
@@ -27,8 +26,9 @@ export const login = createAsyncThunk(
   'user/login',
   async ({ email, password }: { email: string; password: string }) => {
     const response = await loginUserApi({ email, password });
+    // Сохраняем токен в localStorage
     if (response.accessToken) {
-      setCookie('accessToken', response.accessToken);
+      localStorage.setItem('accessToken', response.accessToken.replace('Bearer ', ''));
       localStorage.setItem('refreshToken', response.refreshToken);
     }
     return response.user;
@@ -40,7 +40,7 @@ export const register = createAsyncThunk(
   async ({ email, password, name }: { email: string; password: string; name: string }) => {
     const response = await registerUserApi({ email, password, name });
     if (response.accessToken) {
-      setCookie('accessToken', response.accessToken);
+      localStorage.setItem('accessToken', response.accessToken.replace('Bearer ', ''));
       localStorage.setItem('refreshToken', response.refreshToken);
     }
     return response.user;
@@ -67,8 +67,8 @@ export const logout = createAsyncThunk(
   'user/logout',
   async () => {
     await logoutApi();
+    localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
-    deleteCookie('accessToken');
     return null;
   }
 );
@@ -95,25 +95,15 @@ const userSlice = createSlice({
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Ошибка входа';
-        console.error('Login error:', action.error);
       })
       .addCase(register.fulfilled, (state, action: PayloadAction<TUser>) => {
         state.loading = false;
         state.user = action.payload;
         state.isAuthenticated = true;
       })
-      .addCase(register.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message || 'Ошибка регистрации';
-        console.error('Register error:', action.error);
-      })
       .addCase(fetchUser.fulfilled, (state, action: PayloadAction<TUser>) => {
         state.user = action.payload;
         state.isAuthenticated = true;
-      })
-      .addCase(fetchUser.rejected, (state) => {
-        state.user = null;
-        state.isAuthenticated = false;
       })
       .addCase(updateUserData.fulfilled, (state, action: PayloadAction<TUser>) => {
         state.user = action.payload;

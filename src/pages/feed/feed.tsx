@@ -1,4 +1,4 @@
-import { useEffect, FC, useCallback } from 'react';
+import { useEffect, FC } from 'react';
 import { useDispatch, useSelector } from '../../services/store';
 import { Preloader } from '@ui';
 import { FeedUI } from '@ui-pages';
@@ -8,22 +8,24 @@ export const Feed: FC = () => {
   const dispatch = useDispatch();
   const { orders, loading } = useSelector((state) => state.feed);
 
-  const loadFeeds = useCallback(() => {
+  useEffect(() => {
+    console.log('Feed: диспатчим fetchFeed');
     dispatch(fetchFeed());
   }, [dispatch]);
 
-  useEffect(() => {
-    loadFeeds();
-    // Обновляем каждые 10 секунд
-    const interval = setInterval(loadFeeds, 10000);
-    return () => clearInterval(interval);
-  }, [loadFeeds]);
+  const handleGetFeeds = () => {
+    console.log('Feed: ручное обновление');
+    dispatch(fetchFeed());
+  };
+
+  console.log('Feed: orders в store:', orders);
+  console.log('Feed: loading:', loading);
 
   if (loading && !orders.length) {
     return <Preloader />;
   }
 
-  return <FeedUI orders={orders} handleGetFeeds={loadFeeds} />;
+  return <FeedUI orders={orders} handleGetFeeds={handleGetFeeds} />;
 };
 
 export default Feed;
