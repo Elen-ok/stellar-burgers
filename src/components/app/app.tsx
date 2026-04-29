@@ -1,4 +1,3 @@
-
 import { useEffect } from 'react';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from '../../services/store';
@@ -31,8 +30,9 @@ function App() {
 
   useEffect(() => {
     dispatch(fetchIngredients());
-    const token = localStorage.getItem('refreshToken');
-    if (token && !isAuthenticated) {
+    // Проверяем refreshToken в localStorage (он там сохраняется при логине)
+    const refreshToken = localStorage.getItem('refreshToken');
+    if (refreshToken && !isAuthenticated) {
       dispatch(fetchUser());
     }
   }, [dispatch, isAuthenticated]);
@@ -111,4 +111,3 @@ function App() {
 }
 
 export default App;
-

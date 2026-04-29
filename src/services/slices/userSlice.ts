@@ -7,6 +7,7 @@ import {
   logoutApi,
 } from '../../utils/burger-api';
 import { TUser } from '../../utils/types';
+import { setCookie, deleteCookie } from '../../utils/cookie';
 
 interface UserState {
   user: TUser | null;
@@ -26,9 +27,9 @@ export const login = createAsyncThunk(
   'user/login',
   async ({ email, password }: { email: string; password: string }) => {
     const response = await loginUserApi({ email, password });
-    // Сохраняем токен в localStorage
+    // Сохраняем токен в cookie
     if (response.accessToken) {
-      localStorage.setItem('accessToken', response.accessToken.replace('Bearer ', ''));
+      setCookie('accessToken', response.accessToken);
       localStorage.setItem('refreshToken', response.refreshToken);
     }
     return response.user;
@@ -40,7 +41,7 @@ export const register = createAsyncThunk(
   async ({ email, password, name }: { email: string; password: string; name: string }) => {
     const response = await registerUserApi({ email, password, name });
     if (response.accessToken) {
-      localStorage.setItem('accessToken', response.accessToken.replace('Bearer ', ''));
+      setCookie('accessToken', response.accessToken);
       localStorage.setItem('refreshToken', response.refreshToken);
     }
     return response.user;
@@ -67,7 +68,7 @@ export const logout = createAsyncThunk(
   'user/logout',
   async () => {
     await logoutApi();
-    localStorage.removeItem('accessToken');
+    deleteCookie('accessToken');
     localStorage.removeItem('refreshToken');
     return null;
   }

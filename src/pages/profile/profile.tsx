@@ -6,7 +6,7 @@ import { fetchUser, updateUserData } from '../../services/slices/userSlice';
 export const Profile: FC = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.user);
-  
+
   const [formValue, setFormValue] = useState({
     name: '',
     email: '',
@@ -32,15 +32,14 @@ export const Profile: FC = () => {
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
-    dispatch(updateUserData({ 
-      name: formValue.name, 
+    dispatch(updateUserData({
+      name: formValue.name,
       email: formValue.email,
       password: formValue.password || undefined
     }))
       .unwrap()
       .then(() => {
         setIsFormChanged(false);
-        alert('Данные успешно обновлены');
       })
       .catch((err: Error) => {
         alert(err.message || 'Ошибка обновления данных');
