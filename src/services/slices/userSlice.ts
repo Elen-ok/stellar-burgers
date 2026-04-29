@@ -27,7 +27,6 @@ export const login = createAsyncThunk(
   'user/login',
   async ({ email, password }: { email: string; password: string }) => {
     const response = await loginUserApi({ email, password });
-    // Сохраняем токен в cookie
     if (response.accessToken) {
       setCookie('accessToken', response.accessToken);
       localStorage.setItem('refreshToken', response.refreshToken);
@@ -67,7 +66,11 @@ export const updateUserData = createAsyncThunk(
 export const logout = createAsyncThunk(
   'user/logout',
   async () => {
-    await logoutApi();
+    try {
+      await logoutApi();
+    } catch (e) {
+      // ignore errors
+    }
     deleteCookie('accessToken');
     localStorage.removeItem('refreshToken');
     return null;

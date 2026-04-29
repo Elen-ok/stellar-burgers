@@ -14,8 +14,6 @@ export const ProfileMenu: FC = () => {
     dispatch(logout())
       .unwrap()
       .then(() => {
-        // Принудительно очищаем localStorage на всякий случай
-        localStorage.removeItem('refreshToken');
         navigate('/login', { replace: true });
       })
       .catch(() => {
