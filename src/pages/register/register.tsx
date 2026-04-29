@@ -1,8 +1,11 @@
 import { FC, SyntheticEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from '../../services/store';
+import { register } from '../../services/slices/userSlice';
 import { RegisterUI } from '@ui-pages';
 
 export const Register: FC = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [userName, setUserName] = useState('');
   const [email, setEmail] = useState('');
@@ -11,13 +14,16 @@ export const Register: FC = () => {
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
-    if (userName && email && password) {
-      localStorage.setItem('demo-auth', 'true');
-      localStorage.setItem('demo-user', JSON.stringify({ email, name: userName }));
-      navigate('/');
-    } else {
-      setError('Заполните все поля');
-    }
+    setError('');
+    
+    dispatch(register({ email, password, name: userName }))
+      .unwrap()
+      .then(() => {
+        navigate('/');
+      })
+      .catch((err) => {
+        setError(err.message || 'Ошибка регистрации');
+      });
   };
 
   return (
