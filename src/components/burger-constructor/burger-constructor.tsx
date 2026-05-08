@@ -23,7 +23,6 @@ export const BurgerConstructor: FC = () => {
   }, [bun, ingredients]);
 
   const onOrderClick = () => {
-    
     if (!bun) {
       alert('Добавьте булку');
       return;
@@ -32,6 +31,15 @@ export const BurgerConstructor: FC = () => {
       alert('Добавьте ингредиенты');
       return;
     }
+
+    // ========== ПРОВЕРКА АВТОРИЗАЦИИ ==========
+    const accessToken = localStorage.getItem('accessToken');
+    if (!accessToken) {
+      alert('Для оформления заказа необходимо войти в аккаунт');
+      navigate('/login');
+      return;
+    }
+    // =========================================
 
     const orderItems = [bun._id, ...ingredients.map(item => item._id), bun._id];
     dispatch(createOrder(orderItems));
