@@ -15,6 +15,7 @@ import {
 import { AppHeader, Modal, OrderInfo, IngredientDetails } from '@components';
 import { ProtectedRoute } from '../protected-route';
 import { fetchIngredients } from '../../services/slices/ingredientsSlice';
+import { fetchUser } from '../../services/slices/userSlice';
 import styles from './app.module.css';
 import '../../index.css';
 
@@ -23,14 +24,22 @@ const App = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const background = location.state?.background;
-  
-  const { items, loading, error } = useSelector((state) => state.ingredients);
+
+  const { items, loading } = useSelector((state) => state.ingredients);
+  const { isAuthenticated } = useSelector((state) => state.user);
 
   useEffect(() => {
     if (items.length === 0 && !loading) {
       dispatch(fetchIngredients());
     }
   }, [dispatch, items.length, loading]);
+
+  useEffect(() => {
+    const refreshToken = localStorage.getItem('refreshToken');
+    if (refreshToken && !isAuthenticated) {
+      dispatch(fetchUser());
+    }
+  }, [dispatch, isAuthenticated]);
 
   const handleModalClose = () => {
     navigate(-1);

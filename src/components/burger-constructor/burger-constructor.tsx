@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from '../../services/store';
 import { BurgerConstructorUI } from '../ui/burger-constructor';
 import { createOrder, clearOrder } from '../../services/slices/orderSlice';
 import { clearConstructor } from '../../services/slices/constructorSlice';
+import { getCookie } from '../../utils/cookie';
 
 export const BurgerConstructor: FC = () => {
   const dispatch = useDispatch();
@@ -32,16 +33,17 @@ export const BurgerConstructor: FC = () => {
       return;
     }
 
-    // ========== ПРОВЕРКА АВТОРИЗАЦИИ ==========
-    const accessToken = localStorage.getItem('accessToken');
+    const accessToken = getCookie('accessToken');
+    console.log('Токен из cookie:', accessToken);
+    
     if (!accessToken) {
       alert('Для оформления заказа необходимо войти в аккаунт');
       navigate('/login');
       return;
     }
-    // =========================================
 
     const orderItems = [bun._id, ...ingredients.map(item => item._id), bun._id];
+    console.log('ID ингредиентов для заказа:', orderItems);
     dispatch(createOrder(orderItems));
   };
 
