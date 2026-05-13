@@ -28,7 +28,8 @@ export const login = createAsyncThunk(
   async ({ email, password }: { email: string; password: string }) => {
     const response = await loginUserApi({ email, password });
     if (response.accessToken) {
-      setCookie('accessToken', response.accessToken);
+      const cleanToken = response.accessToken.replace(/^Bearer\s+/i, '');
+      setCookie('accessToken', cleanToken);
       localStorage.setItem('refreshToken', response.refreshToken);
     }
     return response.user;
@@ -40,7 +41,8 @@ export const register = createAsyncThunk(
   async ({ email, password, name }: { email: string; password: string; name: string }) => {
     const response = await registerUserApi({ email, password, name });
     if (response.accessToken) {
-      setCookie('accessToken', response.accessToken);
+      const cleanToken = response.accessToken.replace(/^Bearer\s+/i, '');
+      setCookie('accessToken', cleanToken);
       localStorage.setItem('refreshToken', response.refreshToken);
     }
     return response.user;
