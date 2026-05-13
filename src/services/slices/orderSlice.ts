@@ -15,9 +15,17 @@ const initialState: OrderState = {
 
 export const createOrder = createAsyncThunk(
   'order/createOrder',
-  async (ingredientsIds: string[]) => {
-    const response = await orderBurgerApi(ingredientsIds);
-    return response.order;
+  async (ingredientsIds: string[], { rejectWithValue }) => {
+    try {
+      const response = await orderBurgerApi(ingredientsIds);
+      if (!response || !response.order) {
+        return rejectWithValue('Не удалось создать заказ');
+      }
+      return response.order;
+    } catch (error: any) {
+      console.error('Ошибка при создании заказа:', error);
+      return rejectWithValue(error.message || 'Ошибка создания заказа');
+    }
   }
 );
 
@@ -28,6 +36,9 @@ const orderSlice = createSlice({
     clearOrder: (state) => {
       state.order = null;
       state.error = null;
+    },
+    resetLoading: (state) => {
+      state.loading = false;
     },
   },
   extraReducers: (builder) => {
@@ -42,11 +53,11 @@ const orderSlice = createSlice({
       })
       .addCase(createOrder.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Ошибка';
-        console.error('Order rejected:', action.error);
+        state.error = action.payload as string || 'Ошибка создания заказа';
+        console.error('Order rejected:', action.payload);
       });
   },
 });
 
-export const { clearOrder } = orderSlice.actions;
+export const { clearOrder, resetLoading } = orderSlice.actions;
 export default orderSlice.reducer;

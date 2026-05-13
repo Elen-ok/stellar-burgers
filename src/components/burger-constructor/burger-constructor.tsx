@@ -2,7 +2,7 @@ import { FC, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from '../../services/store';
 import { BurgerConstructorUI } from '../ui/burger-constructor';
-import { createOrder, clearOrder } from '../../services/slices/orderSlice';
+import { createOrder, clearOrder, resetLoading } from '../../services/slices/orderSlice';
 import { clearConstructor } from '../../services/slices/constructorSlice';
 
 export const BurgerConstructor: FC = () => {
@@ -24,7 +24,11 @@ export const BurgerConstructor: FC = () => {
   }, [bun, ingredients]);
 
   const onOrderClick = () => {
-    // Проверка авторизации через Redux
+    if (loading) {
+      console.log('Заказ уже оформляется, подождите...');
+      return;
+    }
+    
     if (!isAuthenticated) {
       navigate('/login');
       return;
@@ -46,6 +50,7 @@ export const BurgerConstructor: FC = () => {
 
   const closeOrderModal = () => {
     dispatch(clearOrder());
+    dispatch(resetLoading());
     if (order) {
       dispatch(clearConstructor());
     }
