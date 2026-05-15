@@ -1,5 +1,5 @@
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from '../../services/store';
 import {
   ConstructorPage,
@@ -15,6 +15,7 @@ import {
 import { AppHeader, Modal, OrderInfo, IngredientDetails } from '@components';
 import { ProtectedRoute } from '../protected-route';
 import { fetchIngredients } from '../../services/slices/ingredientsSlice';
+import { fetchUser } from '../../services/slices/userSlice';
 import styles from './app.module.css';
 import '../../index.css';
 
@@ -23,8 +24,20 @@ const App = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const background = location.state?.background;
-  
+
   const { items, loading, error } = useSelector((state) => state.ingredients);
+  const [isAppLoading, setIsAppLoading] = useState(true);
+
+  useEffect(() => {
+    const restoreSession = async () => {
+      const hasToken = document.cookie.includes('accessToken=');
+      if (hasToken) {
+        await dispatch(fetchUser()).catch(() => {});
+      }
+      setIsAppLoading(false);
+    };
+    restoreSession();
+  }, [dispatch]);
 
   useEffect(() => {
     if (items.length === 0 && !loading) {
@@ -35,6 +48,10 @@ const App = () => {
   const handleModalClose = () => {
     navigate(-1);
   };
+
+  if (isAppLoading) {
+    return <div>Загрузка...</div>;
+  }
 
   return (
     <div className={styles.app}>
