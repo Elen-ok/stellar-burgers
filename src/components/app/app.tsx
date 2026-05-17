@@ -104,8 +104,13 @@ const App = () => {
 
       {background && (
         <Routes>
+          <Route path="/ingredients/:id" element={
+            <Modal title="Детали ингредиента" onClose={handleModalClose}>
+              <IngredientDetails />
+            </Modal>
+          } />
           <Route path="/feed/:number" element={
-            <Modal title={`#${location.pathname.split('/').pop()}`} onClose={handleModalClose}>
+            <Modal title={`#${location.pathname.split("/").pop()}`} onClose={handleModalClose}>
               <OrderInfo />
             </Modal>
           } />
@@ -117,6 +122,7 @@ const App = () => {
             </Modal>
           } />
         </Routes>
+      )}
       )}
     </div>
   );
