@@ -17,7 +17,6 @@ import { ProtectedRoute } from '../protected-route';
 import { fetchIngredients } from '../../services/slices/ingredientsSlice';
 import { fetchUser } from '../../services/slices/userSlice';
 import styles from './app.module.css';
-import '../../index.css';
 
 const App = () => {
   const location = useLocation();
@@ -25,18 +24,19 @@ const App = () => {
   const dispatch = useDispatch();
   const background = location.state?.background;
 
-  const { items, loading, error } = useSelector((state) => state.ingredients);
+  const { items, loading } = useSelector((state) => state.ingredients);
   const [isAppLoading, setIsAppLoading] = useState(true);
 
   useEffect(() => {
-    const restoreSession = async () => {
+    const initApp = async () => {
       const hasToken = document.cookie.includes('accessToken=');
       if (hasToken) {
-        await dispatch(fetchUser()).catch(() => {});
+        await dispatch(fetchUser()).unwrap();
       }
       setIsAppLoading(false);
     };
-    restoreSession();
+    
+    initApp();
   }, [dispatch]);
 
   useEffect(() => {
@@ -50,7 +50,7 @@ const App = () => {
   };
 
   if (isAppLoading) {
-    return <div>Загрузка...</div>;
+    return <div className={styles.loader}>Загрузка...</div>;
   }
 
   return (
@@ -110,7 +110,7 @@ const App = () => {
             </Modal>
           } />
           <Route path="/feed/:number" element={
-            <Modal title={`#${location.pathname.split("/").pop()}`} onClose={handleModalClose}>
+            <Modal title={`#${location.pathname.split('/').pop()}`} onClose={handleModalClose}>
               <OrderInfo />
             </Modal>
           } />
@@ -122,7 +122,6 @@ const App = () => {
             </Modal>
           } />
         </Routes>
-      )}
       )}
     </div>
   );
