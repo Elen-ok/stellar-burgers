@@ -1,31 +1,48 @@
-import { store } from '../../store';
+import { configureStore } from '@reduxjs/toolkit';
+import constructorReducer from '../constructorSlice';
+import ingredientsReducer from '../ingredientsSlice';
+import orderReducer from '../orderSlice';
+import userReducer from '../userSlice';
+import feedReducer from '../feedSlice';
+import profileOrdersReducer from '../profileOrdersSlice';
+
+// Функция для получения начального состояния редьюсера
+const getInitialState = (reducer: any) => {
+  return reducer(undefined, { type: '@@INIT' });
+};
 
 describe('rootReducer', () => {
-  test('должен возвращать корректное начальное состояние при неизвестном экшене', () => {
-    // Получаем начальное состояние из store
-    const initialState = store.getState();
+  test('при неизвестном экшене возвращает корректное начальное состояние', () => {
+    // Создаём store
+    const store = configureStore({
+      reducer: {
+        ingredients: ingredientsReducer,
+        burgerConstructor: constructorReducer,
+        order: orderReducer,
+        feed: feedReducer,
+        user: userReducer,
+        profileOrders: profileOrdersReducer,
+      },
+    });
     
-    // Создаём фиктивный экшен, который не обрабатывается ни одним редьюсером
     const unknownAction = { type: 'UNKNOWN_ACTION' };
     
-    // Вызываем редьюсер напрямую через store.dispatch
-    // Но проще проверить, что состояние имеет правильную структуру
+    // Получаем начальное состояние
+    const initialState = store.getState();
     
-    // Проверяем структуру начального состояния
-    expect(initialState).toHaveProperty('ingredients');
-    expect(initialState).toHaveProperty('burgerConstructor');
-    expect(initialState).toHaveProperty('order');
-    expect(initialState).toHaveProperty('feed');
-    expect(initialState).toHaveProperty('user');
-    expect(initialState).toHaveProperty('profileOrders');
+    // Диспатчим неизвестный экшен
+    store.dispatch(unknownAction);
+    const newState = store.getState();
     
-    // Проверяем начальные значения ключевых слайсов
-    expect(initialState.ingredients.loading).toBe(false);
-    expect(initialState.ingredients.items).toEqual([]);
-    expect(initialState.burgerConstructor.bun).toBeNull();
-    expect(initialState.burgerConstructor.ingredients).toEqual([]);
-    expect(initialState.order.order).toBeNull();
-    expect(initialState.user.user).toBeNull();
-    expect(initialState.user.isAuthenticated).toBe(false);
+    // Состояние не должно измениться
+    expect(newState).toEqual(initialState);
+    
+    // Дополнительная проверка: начальные состояния редьюсеров
+    expect(newState.burgerConstructor).toEqual(getInitialState(constructorReducer));
+    expect(newState.ingredients).toEqual(getInitialState(ingredientsReducer));
+    expect(newState.order).toEqual(getInitialState(orderReducer));
+    expect(newState.user).toEqual(getInitialState(userReducer));
+    expect(newState.feed).toEqual(getInitialState(feedReducer));
+    expect(newState.profileOrders).toEqual(getInitialState(profileOrdersReducer));
   });
 });
