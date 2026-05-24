@@ -9,3 +9,14 @@ dist
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# Playwright
+test-results/
+playwright-report/
+tests/*.png
+
+# Cypress
+cypress/
+
+# Coverage
+coverage/

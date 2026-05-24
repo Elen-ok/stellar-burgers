@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "start": "webpack serve --mode=development",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed"
+  }
+}
