@@ -2,30 +2,22 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Страница конструктора бургера', () => {
   
-  test.beforeEach(async ({ page, context }) => {
-    // ИСПОЛЬЗУЕМ HAR ФАЙЛ для всех запросов
+  test.beforeEach(async ({ page }) => {
+    // Используем записанный HAR файл
     await page.routeFromHAR('./tests/hars/full-session.har', {
-      update: false,  // Режим воспроизведения
-    });
-    
-    // Токены из HAR файла
-    await context.addCookies([
-      { name: 'accessToken', value: 'Bearer token-from-har', url: 'http://localhost:4000' }
-    ]);
-    await page.addInitScript(() => {
-      localStorage.setItem('refreshToken', 'refresh-from-har');
+      update: false,
     });
     
     await page.goto('http://localhost:4000');
     await page.waitForSelector('button:has-text("Добавить")', { timeout: 20000 });
   });
 
-  test('1. Добавление булки в конструктор', async ({ page }) => {
+  test('1. Добавление булки', async ({ page }) => {
     await page.locator('button:has-text("Добавить")').first().click();
     console.log('✅ Булка добавлена');
   });
 
-  test('2. Добавление начинки в конструктор', async ({ page }) => {
+  test('2. Добавление начинки', async ({ page }) => {
     const ingredientCard = page.locator('li').filter({ hasText: '424' }).first();
     await ingredientCard.locator('button:has-text("Добавить")').click();
     console.log('✅ Начинка добавлена');
@@ -38,41 +30,33 @@ test.describe('Страница конструктора бургера', () => 
     const modal = page.locator('#modals');
     await expect(modal).toBeVisible({ timeout: 5000 });
     await expect(modal).toContainText('Краторная булка N-200i');
-    console.log('✅ Модальное окно ингредиента открылось');
+    console.log('✅ Модальное окно открылось');
     
     await modal.locator('button').first().click();
     await expect(modal).toBeHidden();
-    console.log('✅ Закрытие по крестику');
+    console.log('✅ Закрыто по крестику');
   });
 
   test('4. Создание заказа', async ({ page }) => {
-    // Собираем бургер
     await page.locator('button:has-text("Добавить")').first().click();
     
     const ingredientCard = page.locator('li').filter({ hasText: '424' }).first();
     await ingredientCard.locator('button:has-text("Добавить")').click();
     
-    await page.waitForTimeout(500);
-    
-    // Оформляем заказ
     await page.click('button:has-text("Оформить заказ")');
     
-    // Модальное окно заказа
     const modal = page.locator('#modals');
     await expect(modal).toBeVisible({ timeout: 10000 });
     console.log('✅ Модальное окно заказа открылось');
     
-    // Номер заказа
     const orderNumber = modal.locator('text=/\\d+/').first();
     await expect(orderNumber).toBeVisible();
     console.log(`✅ Номер заказа: ${await orderNumber.textContent()}`);
     
-    // Закрываем
     await modal.locator('button').first().click();
     await expect(modal).toBeHidden();
-    console.log('✅ Модальное окно заказа закрыто');
+    console.log('✅ Модальное окно закрыто');
     
-    // Проверяем очистку конструктора
     await page.waitForTimeout(500);
     const constructorElements = page.locator('.constructor-element');
     await expect(constructorElements).toHaveCount(0);

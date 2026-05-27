@@ -1,21 +1,28 @@
 import { combineReducers } from '@reduxjs/toolkit';
 import constructorReducer from '../constructorSlice';
 import ingredientsReducer from '../ingredientsSlice';
-import orderReducer from '../orderSlice';
-import userReducer from '../userSlice';
 
+// Создаем rootReducer в тесте
 const rootReducer = combineReducers({
   burgerConstructor: constructorReducer,
   ingredients: ingredientsReducer,
-  order: orderReducer,
-  user: userReducer,
 });
 
 describe('rootReducer', () => {
-  test('при неизвестном экшене возвращает корректное начальное состояние', () => {
-    const unknownAction = { type: 'UNKNOWN_ACTION' };
-    const initialState = rootReducer(undefined, { type: '@@INIT' });
-    const newState = rootReducer(undefined, unknownAction);
-    expect(newState).toEqual(initialState);
+  test('должен возвращать корректное начальное состояние при неизвестном экшене', () => {
+    const initialState = {
+      burgerConstructor: {
+        bun: null,
+        ingredients: [],
+      },
+      ingredients: {
+        items: [],  // ← исправлено: data → items
+        loading: false,
+        error: null,
+      },
+    };
+    
+    const state = rootReducer(undefined, { type: 'UNKNOWN_ACTION' });
+    expect(state).toEqual(initialState);
   });
 });

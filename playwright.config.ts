@@ -2,6 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests',
+  testMatch: '**/*.spec.ts',
   timeout: 60000,
   fullyParallel: false,
   workers: 1,
@@ -17,4 +18,10 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
+  webServer: {
+    command: 'npm start',
+    url: 'http://localhost:4000',
+    reuseExistingServer: true,
+    timeout: 120000,
+  },
 });
