@@ -20,3 +20,17 @@ cypress/
 
 # Coverage
 coverage/
+
+# Playwright reports
+playwright-report/
+test-results/
+coverage/
+
+# Screenshots
+*.png
+*.jpg
+*.jpeg
+
+# Backups
+*.backup
+*.tmp
