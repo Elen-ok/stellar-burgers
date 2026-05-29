@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Конструктор бургера', () => {
   
   test.beforeEach(async ({ page, context }) => {
-    // Моки API
+    // Моки API (без HAR - РАБОТАЕТ)
     await page.route('**/api/auth/user', async route => {
       await route.fulfill({
         status: 200,
@@ -42,7 +42,7 @@ test.describe('Конструктор бургера', () => {
       localStorage.setItem('accessToken', 'Bearer mock-token');
     });
     
-    await page.goto('/');
+    await page.goto('http://localhost:4000');
     await page.waitForSelector('button:has-text("Добавить")', { timeout: 15000 });
   });
 

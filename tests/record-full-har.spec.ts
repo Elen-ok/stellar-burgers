@@ -6,7 +6,7 @@ test('Полная запись HAR', async ({ page }) => {
     updateContent: 'embed',
   });
   
-  // Реальная авторизация на время записи
+  // РЕАЛЬНАЯ авторизация для записи
   await page.goto('http://localhost:4000/register');
   const email = `test${Date.now()}@example.com`;
   await page.fill('input[name="name"]', 'TestUser');
@@ -16,20 +16,20 @@ test('Полная запись HAR', async ({ page }) => {
   await page.waitForURL('http://localhost:4000/');
   await page.waitForSelector('button:has-text("Добавить")', { timeout: 15000 });
   
-  // Записываем ВСЕ действия
-  // 1. Добавляем булку
+  // Записываем ВСЕ действия для тестов
+  // 1. Добавление булки
   await page.locator('button:has-text("Добавить")').first().click();
   
-  // 2. Добавляем начинку
+  // 2. Добавление начинки
   await page.locator('li').filter({ hasText: '424' }).first()
     .locator('button:has-text("Добавить")').click();
   
-  // 3. Открываем страницу ингредиента
+  // 3. Открытие страницы ингредиента
   await page.locator('img').first().click();
   await page.waitForTimeout(1000);
-  
-  // 4. Оформляем заказ
   await page.goBack();
+  
+  // 4. Оформление заказа
   await page.click('button:has-text("Оформить заказ")');
   await page.waitForTimeout(2000);
   
