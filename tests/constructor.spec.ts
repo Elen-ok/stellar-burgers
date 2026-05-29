@@ -3,15 +3,6 @@ import { test, expect } from '@playwright/test';
 test.describe('Конструктор бургера', () => {
   
   test.beforeEach(async ({ page, context }) => {
-    // Моки авторизации
-    await context.addCookies([
-      { name: 'accessToken', value: 'Bearer mock-token', domain: 'localhost', path: '/' }
-    ]);
-    await page.addInitScript(() => {
-      localStorage.setItem('refreshToken', 'mock-refresh');
-      localStorage.setItem('accessToken', 'Bearer mock-token');
-    });
-
     // Моки API
     await page.route('**/api/auth/user', async route => {
       await route.fulfill({
@@ -42,7 +33,16 @@ test.describe('Конструктор бургера', () => {
       }
     });
     
-    await page.goto('http://localhost:4000');
+    // Фейковые токены
+    await context.addCookies([
+      { name: 'accessToken', value: 'Bearer mock-token', url: 'http://localhost:4000' }
+    ]);
+    await page.addInitScript(() => {
+      localStorage.setItem('refreshToken', 'mock-refresh');
+      localStorage.setItem('accessToken', 'Bearer mock-token');
+    });
+    
+    await page.goto('/');
     await page.waitForSelector('button:has-text("Добавить")', { timeout: 15000 });
   });
 
