@@ -10,6 +10,13 @@ export default defineConfig({
     baseURL: 'http://localhost:4000',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
+    launchOptions: {
+      args: [
+        '--disable-web-security',
+        '--disable-features=VizDisplayCompositor',
+        '--disable-gpu'
+      ]
+    }
   },
   projects: [
     {
@@ -17,10 +24,4 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-  webServer: {
-    command: 'npm start',
-    url: 'http://localhost:4000',
-    reuseExistingServer: true,  // ← ЭТО КЛЮЧЕВОЙ ПАРАМЕТР!
-    timeout: 120000,
-  },
 });
