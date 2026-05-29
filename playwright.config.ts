@@ -20,7 +20,7 @@ export default defineConfig({
   webServer: {
     command: 'npm start',
     url: 'http://localhost:4000',
-    reuseExistingServer: true,
+    reuseExistingServer: true,  // ← ЭТО КЛЮЧЕВОЙ ПАРАМЕТР!
     timeout: 120000,
   },
 });
