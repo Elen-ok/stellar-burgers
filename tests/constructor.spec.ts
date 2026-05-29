@@ -1,31 +1,22 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Конструктор бургера (все тесты с авторизацией)', () => {
+test.describe('Конструктор бургера', () => {
   
   test.beforeEach(async ({ page, context }) => {
-    // ===== МОКИ АВТОРИЗАЦИИ =====
+    // Моки авторизации
     await context.addCookies([
-      {
-        name: 'accessToken',
-        value: 'Bearer mock-token',
-        domain: 'localhost',
-        path: '/',
-      },
+      { name: 'accessToken', value: 'Bearer mock-token', domain: 'localhost', path: '/' }
     ]);
-    
     await page.addInitScript(() => {
       localStorage.setItem('refreshToken', 'mock-refresh');
       localStorage.setItem('accessToken', 'Bearer mock-token');
     });
-    
-    // ===== МОКИ API =====
+
+    // Моки API
     await page.route('**/api/auth/user', async route => {
       await route.fulfill({
         status: 200,
-        body: JSON.stringify({
-          success: true,
-          user: { email: 'test@example.com', name: 'TestUser' }
-        })
+        body: JSON.stringify({ success: true, user: { email: 'test@example.com', name: 'TestUser' } })
       });
     });
     
@@ -35,21 +26,20 @@ test.describe('Конструктор бургера (все тесты с ав�
         body: JSON.stringify({
           success: true,
           data: [
-            { _id: "1", name: "Краторная булка N-200i", type: "bun", price: 1255, proteins: 80, fat: 24, carbohydrates: 53, calories: 420 },
-            { _id: "2", name: "Биокотлета", type: "main", price: 424, proteins: 420, fat: 142, carbohydrates: 242, calories: 4242 }
+            { _id: "1", name: "Краторная булка N-200i", type: "bun", price: 1255 },
+            { _id: "2", name: "Биокотлета", type: "main", price: 424 }
           ]
         })
       });
     });
     
-    await page.route('**/api/ingredients/1', async route => {
-      await route.fulfill({
-        status: 200,
-        body: JSON.stringify({
-          success: true,
-          ingredient: { _id: "1", name: "Краторная булка N-200i", proteins: 80, fat: 24, carbohydrates: 53, calories: 420 }
-        })
-      });
+    await page.route('**/api/orders', async route => {
+      if (route.request().method() === 'POST') {
+        await route.fulfill({
+          status: 200,
+          body: JSON.stringify({ success: true, order: { number: 12345 } })
+        });
+      }
     });
     
     await page.goto('http://localhost:4000');
@@ -76,6 +66,26 @@ test.describe('Конструктор бургера (все тесты с ав�
     console.log('✅ Страница ингредиента открыта');
     
     await page.goBack();
-    console.log('✅ Возврат на главную');
+  });
+
+  test('4. Создание заказа', async ({ page }) => {
+    await page.locator('button:has-text("Добавить")').first().click();
+    const ingredientCard = page.locator('li').filter({ hasText: '424' }).first();
+    await ingredientCard.locator('button:has-text("Добавить")').click();
+    
+    await page.waitForTimeout(500);
+    await page.click('button:has-text("Оформить заказ")');
+    
+    await expect(page.locator('text=12345')).toBeVisible({ timeout: 10000 });
+    console.log('✅ Номер заказа 12345 отображается');
+    
+    const closeButton = page.locator('#modals button').first();
+    await closeButton.click();
+    console.log('✅ Модальное окно закрыто');
+    
+    await page.waitForTimeout(500);
+    const constructorElements = page.locator('.constructor-element');
+    await expect(constructorElements).toHaveCount(0);
+    console.log('✅ Конструктор очищен');
   });
 });
