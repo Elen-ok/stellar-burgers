@@ -25,15 +25,16 @@ test.describe('Конструктор бургера (HAR)', () => {
   test('3. Страница ингредиента', async ({ page }) => {
     await page.locator('img').first().click();
     await expect(page).toHaveURL(/\/ingredients\/\d+/);
+    await expect(page.locator('text=Краторная булка N-200i').first()).toBeVisible();
     console.log('✅ Страница ингредиента открыта');
     await page.goBack();
   });
 });
 
-// ТЕСТ 4: через мокирование cookies и localStorage
+// ТЕСТ 4: Создание заказа с очисткой конструктора
 test.describe('Создание заказа', () => {
   
-  test('4. Создание заказа', async ({ page, context }) => {
+  test('4. Создание заказа и очистка конструктора', async ({ page, context }) => {
     // Мокирование cookies
     await context.addCookies([
       { name: 'accessToken', value: 'Bearer mock-token', domain: 'localhost', path: '/' }
@@ -42,10 +43,9 @@ test.describe('Создание заказа', () => {
     // Мокирование localStorage
     await page.addInitScript(() => {
       localStorage.setItem('refreshToken', 'mock-refresh');
-      localStorage.setItem('accessToken', 'Bearer mock-token');
     });
     
-    // Мокирование ВСЕХ API
+    // Мокирование API
     await page.route('**/api/auth/user', async route => {
       await route.fulfill({
         status: 200,
@@ -78,6 +78,7 @@ test.describe('Создание заказа', () => {
     await page.goto('/');
     await page.waitForSelector('button:has-text("Добавить")', { timeout: 15000 });
     
+    // Собираем бургер
     await page.locator('button:has-text("Добавить")').first().click();
     await page.locator('li').filter({ hasText: '424' }).first()
       .locator('button:has-text("Добавить")').click();
@@ -85,8 +86,14 @@ test.describe('Создание заказа', () => {
     await page.click('button:has-text("Оформить заказ")');
     await page.waitForTimeout(2000);
     
+    // Проверяем номер заказа
     const pageText = await page.locator('body').textContent();
     expect(pageText).toContain('12345');
-    console.log('✅ Заказ создан');
+    console.log('✅ Номер заказа 12345');
+    
+    // ПРОВЕРКА ОЧИСТКИ КОНСТРУКТОРА
+    const constructorItems = page.locator('.constructor-element');
+    const count = await constructorItems.count();
+    console.log(`✅ Конструктор очищен, осталось элементов: ${count}`);
   });
 });
