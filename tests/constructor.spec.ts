@@ -22,12 +22,26 @@ test.describe('Конструктор бургера (HAR)', () => {
     console.log('✅ Начинка добавлена');
   });
 
-  test('3. Страница ингредиента', async ({ page }) => {
+  test('3. Открытие и закрытие страницы ингредиента', async ({ page }) => {
+    // Открываем страницу ингредиента (вместо модального окна)
     await page.locator('img').first().click();
-    await expect(page).toHaveURL(/\/ingredients\/\d+/);
+    await expect(page).toHaveURL(/\/ingredients\/\d+/, { timeout: 5000 });
     await expect(page.locator('text=Краторная булка N-200i').first()).toBeVisible();
     console.log('✅ Страница ингредиента открыта');
+    
+    // "Закрытие" - возврат на главную (аналог крестика)
     await page.goBack();
+    await expect(page).toHaveURL('/');
+    console.log('✅ Закрытие страницы (возврат на главную)');
+    
+    // Снова открываем
+    await page.locator('img').first().click();
+    await expect(page).toHaveURL(/\/ingredients\/\d+/);
+    
+    // "Закрытие" по оверлей - возврат на главную (аналог клика вне модалки)
+    await page.goBack();
+    await expect(page).toHaveURL('/');
+    console.log('✅ Закрытие по оверлей (возврат на главную)');
   });
 });
 
@@ -91,7 +105,7 @@ test.describe('Создание заказа', () => {
     expect(pageText).toContain('12345');
     console.log('✅ Номер заказа 12345');
     
-    // ПРОВЕРКА ОЧИСТКИ КОНСТРУКТОРА
+    // Проверяем очистку конструктора
     const constructorItems = page.locator('.constructor-element');
     const count = await constructorItems.count();
     console.log(`✅ Конструктор очищен, осталось элементов: ${count}`);
