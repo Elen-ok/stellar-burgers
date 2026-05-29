@@ -68,7 +68,7 @@ test.describe('Конструктор бургера', () => {
     await page.goBack();
   });
 
-  test('4. Создание заказа', async ({ page }) => {
+  test('4. Создание заказа и очистка конструктора', async ({ page }) => {
     await page.locator('button:has-text("Добавить")').first().click();
     const ingredientCard = page.locator('li').filter({ hasText: '424' }).first();
     await ingredientCard.locator('button:has-text("Добавить")').click();
