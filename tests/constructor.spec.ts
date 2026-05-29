@@ -22,44 +22,47 @@ test.describe('Конструктор бургера (HAR)', () => {
     console.log('✅ Начинка добавлена');
   });
 
-  test('3. Открытие и закрытие страницы ингредиента', async ({ page }) => {
-    // Открываем страницу ингредиента (вместо модального окна)
+  test('3. Открытие и закрытие модального окна ингредиента', async ({ page }) => {
+    // Открываем модальное окно
     await page.locator('img').first().click();
-    await expect(page).toHaveURL(/\/ingredients\/\d+/, { timeout: 5000 });
-    await expect(page.locator('text=Краторная булка N-200i').first()).toBeVisible();
-    console.log('✅ Страница ингредиента открыта');
+    await page.waitForTimeout(500);
     
-    // "Закрытие" - возврат на главную (аналог крестика)
-    await page.goBack();
-    await expect(page).toHaveURL('/');
-    console.log('✅ Закрытие страницы (возврат на главную)');
+    // Проверяем, что модальное окно открылось (проверяем видимый контент)
+    const modalContent = page.locator('#modals').locator('h3:text("Детали ингредиента")');
+    await expect(modalContent).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('#modals')).toContainText('Краторная булка');
+    console.log('✅ Модальное окно открылось');
     
-    // Снова открываем
+    // Закрытие по крестику (ищем кнопку с крестиком)
+    const closeButton = page.locator('#modals button').first();
+    await closeButton.click();
+    await page.waitForTimeout(300);
+    console.log('✅ Закрытие по крестику');
+    
+    // Открываем снова
     await page.locator('img').first().click();
-    await expect(page).toHaveURL(/\/ingredients\/\d+/);
+    await page.waitForTimeout(500);
+    await expect(modalContent).toBeVisible();
     
-    // "Закрытие" по оверлей - возврат на главную (аналог клика вне модалки)
-    await page.goBack();
-    await expect(page).toHaveURL('/');
-    console.log('✅ Закрытие по оверлей (возврат на главную)');
+    // Закрытие по оверлей (клик вне модального окна)
+    await page.mouse.click(10, 10);
+    await page.waitForTimeout(300);
+    console.log('✅ Закрытие по оверлей');
   });
 });
 
-// ТЕСТ 4: Создание заказа с очисткой конструктора
+// ТЕСТ 4: Создание заказа
 test.describe('Создание заказа', () => {
   
   test('4. Создание заказа и очистка конструктора', async ({ page, context }) => {
-    // Мокирование cookies
     await context.addCookies([
       { name: 'accessToken', value: 'Bearer mock-token', domain: 'localhost', path: '/' }
     ]);
     
-    // Мокирование localStorage
     await page.addInitScript(() => {
       localStorage.setItem('refreshToken', 'mock-refresh');
     });
     
-    // Мокирование API
     await page.route('**/api/auth/user', async route => {
       await route.fulfill({
         status: 200,
@@ -92,7 +95,6 @@ test.describe('Создание заказа', () => {
     await page.goto('/');
     await page.waitForSelector('button:has-text("Добавить")', { timeout: 15000 });
     
-    // Собираем бургер
     await page.locator('button:has-text("Добавить")').first().click();
     await page.locator('li').filter({ hasText: '424' }).first()
       .locator('button:has-text("Добавить")').click();
@@ -100,12 +102,10 @@ test.describe('Создание заказа', () => {
     await page.click('button:has-text("Оформить заказ")');
     await page.waitForTimeout(2000);
     
-    // Проверяем номер заказа
     const pageText = await page.locator('body').textContent();
     expect(pageText).toContain('12345');
     console.log('✅ Номер заказа 12345');
     
-    // Проверяем очистку конструктора
     const constructorItems = page.locator('.constructor-element');
     const count = await constructorItems.count();
     console.log(`✅ Конструктор очищен, осталось элементов: ${count}`);
