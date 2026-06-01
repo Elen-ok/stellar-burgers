@@ -1,0 +1,47 @@
+6618c8b 2026-05-29 feat: all tests passed - Jest 17/17, Playwright 4/4
+8e8e3f5 2026-05-29 feat: all tests passed - Jest 17/17, Playwright 4/4
+a9b000b 2026-05-29 feat: all tests passed - Jest 17/17, Playwright 4/4
+f9accf5 2026-05-29 feat: all tests passed - Jest 17/17, Playwright 4/4 (HAR + cookies + localStorage)
+5bbca3e 2026-05-29 feat: all tests passed - Jest 17/17, Playwright 10/10
+1e04ba9 2026-05-29 feat: add e2e scripts, all tests passed (Jest 17/17, Playwright 4/4)
+7a81ef1 2026-05-29 feat: all tests passed - Jest 17/17, Playwright 4/4
+0995196 2026-05-29 feat: all tests passed - Jest 17/17, Playwright 4/4
+3e0c310 2026-05-29 feat: all tests passed with mocks - Jest 17/17, Playwright 4/4
+9e11a95 2026-05-29 feat: all tests passed - Jest 17/17, Playwright 4/4
+1387659 2026-05-29 feat: all tests passed - Jest 17/17, Playwright 4/4 with auth mocks
+6525c74 2026-05-29 feat: all tests passed - Jest 17/17, Playwright 3/3 with auth mocks
+089f33f 2026-05-29 feat: all tests passed - Jest 17/17, Playwright 3/3
+fba2728 2026-05-27 chore: clean up unnecessary files, keep only final tests
+89b1906 2026-05-27 feat: all tests passed - Jest 17/17, Playwright 2/2
+213d3bb 2026-05-24 fix: resolve merge conflict in rootReducer.test.ts
+83d0885 2026-05-24 feat: all tests passed
+1259b59 2026-05-24 fix: rootReducer test without initialState exports
+7a0889c 2026-05-23 feat: add full test coverage
+05a86f4 2026-05-20 test: remove duplicate test files, keep only .test.ts
+d7a87ab 2026-05-20 feat: add Jest tests (34 tests passed) and fix project configuration
+3c2d5cc 2026-05-20 feat: add Jest tests for reducers (rootReducer, constructorSlice, ingredientsSlice, orderSlice)
+54dcab1 2026-05-17 fix: correct closing brackets in app.tsx
+5ce91d3 2026-05-17 fix: remove extra closing bracket in background
+b86dfe3 2026-05-15 fix: restore user session
+ee8c575 2026-05-13 fix: reset loading state and improve order submission
+069126a 2026-05-13 fix: use Redux isAuthenticated instead of localStorage for order creation
+e62060d 2026-05-13 fix: add ProtectedRoute and fix order creation with auth check
+e6fe060 2026-05-13 Restore working code from backup (8 мая 2026)
+62cb791 2026-05-13 fix: use getCookie instead of localStorage for auth check
+b37b7b3 2026-05-13 fix: remove Bearer prefix from accessToken
+ded52cb 2026-05-13 fix: check auth via cookie instead of localStorage
+4d10977 2026-05-12 fix: use Redux isAuthenticated for order creation and add index.ts for ProtectedRoute
+dfa2358 2026-05-08 fix: add auth check for order creation and protected route for order history modal
+6332f83 2026-04-29 Final: проект полностью готов
+65b9afd 2026-04-29 Fix: исправлена регистрация - реальное API вместо демо
+ed94e84 2026-04-29 Final: проект полностью готов
+5f6f1a4 2026-04-26 Final: проект готов к сдаче, добавлена getOrdersApi
+f4b60e2 2026-04-26 Fix: хранение токена в localStorage вместо cookies
+cbae06c 2026-04-26 Fix: исправлена авторизация, профиль, история заказов
+26be16c 2026-04-21 проект 11
+f1619d5 2026-02-19 Merge pull request #50 from kaa-it/fix/issues
+539cab6 2026-02-19 fix: stub
+dd90abc 2026-02-19 fix: library and other issues
+41e53c2 2025-10-21 Change base api url
+7def6f5 2024-03-11 feat: sync starter with description page
+b720073 2024-02-20 initial
