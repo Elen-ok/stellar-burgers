@@ -1,0 +1,19 @@
+{
+  "success": true,
+  "data": [
+    {
+      "_id": "bun1",
+      "name": "Краторная булка N-200i",
+      "type": "bun",
+      "price": 1255,
+      "image": "https://code.s3.yandex.net/react/code/bun-02.png"
+    },
+    {
+      "_id": "main1",
+      "name": "Биокотлета из марсианской Магнолии",
+      "type": "main",
+      "price": 424,
+      "image": "https://code.s3.yandex.net/react/code/meat-03.png"
+    }
+  ]
+}
